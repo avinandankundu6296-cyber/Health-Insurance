@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Application Data Capture | Health Insurance App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-blue-50 min-h-screen">
+  <!-- Navbar -->
+  <nav class="bg-blue-700 text-white p-4 sticky top-0 shadow-md flex justify-between items-center">
+    <h1 class="text-xl font-bold">Application Data Capture</h1>
+    <div class="space-x-4">
+      <a href="home.html" class="hover:underline">Home</a>
+      <a href="#" onclick="logout()" class="hover:underline">Logout</a>
+    </div>
+  </nav>
+
+  <!-- Sticky Sub-navigation (Module Tabs) -->
+  <div class="bg-white flex justify-center space-x-4 py-3 shadow sticky top-[64px] z-10 border-b border-blue-100">
+    <button onclick="goTo('application-data.html')" 
+            class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow-md">
+      Application Data Capture
+    </button>
+    <button onclick="alert('Quick Quote module will be available in Sprint 2')" 
+            class="px-5 py-2 bg-white text-blue-700 border border-blue-600 rounded-lg hover:bg-blue-50">
+      Quick Quote
+    </button>
+    <button onclick="alert('Search Entity module will be available in Sprint 2')" 
+            class="px-5 py-2 bg-white text-blue-700 border border-blue-600 rounded-lg hover:bg-blue-50">
+      Search Entity
+    </button>
+  </div>
+
+  <!-- Main Application Data Form -->
+  <main class="p-8 max-w-2xl mx-auto bg-white rounded-xl shadow-lg mt-8">
+    <h2 class="text-2xl font-semibold text-blue-700 mb-6 text-center">Application Data Form</h2>
+
+    <form id="dataCaptureForm" class="space-y-6">
+      <div>
+        <label class="block text-blue-700 font-semibold mb-2">Country</label>
+        <select class="w-full border rounded-lg p-3">
+          <option value="">Select Country</option>
+          <option>India</option>
+          <option>USA</option>
+          <option>UK</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-blue-700 font-semibold mb-2">Line of Business (LOB)</label>
+        <select class="w-full border rounded-lg p-3">
+          <option value="">Select LOB</option>
+          <option>Health Insurance</option>
+          <option>Life Insurance</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-blue-700 font-semibold mb-2">Product</label>
+        <select id="productSelect" class="w-full border rounded-lg p-3">
+          <option value="">Select Product</option>
+          <option value="MSH">MediShield</option>
+          <option value="MSU">MediSure</option>
+          <option value="MCR">MediCare</option>
+          <option value="MPT">MediProtect</option>
+          <option value="MGD">MediGuard</option>
+        </select>
+      </div>
+
+      <button type="button" onclick="generateProposalNumber()" 
+              class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+        Generate Proposal Number
+      </button>
+
+      <p id="proposalDisplay" class="text-center text-blue-700 font-bold"></p>
+
+      <button type="button" onclick="goTo('application-form.html')" 
+              class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700">
+        Save & Continue
+      </button>
+    </form>
+  </main>
+
+  <script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home | Health Insurance App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-blue-50 min-h-screen">
+  <!-- Navbar -->
+  <nav class="bg-blue-700 text-white p-4 flex justify-between items-center sticky top-0 shadow-md">
+    <h1 class="text-xl font-bold">Health Insurance Portal</h1>
+
+    <!-- Role Dropdown inside Navbar -->
+    <div class="flex items-center space-x-4">
+      <label for="roleSelect" class="font-semibold text-white">Role:</label>
+      <select id="roleSelect" onchange="displayModules()" 
+              class="text-blue-700 bg-white px-3 py-1 rounded-lg focus:ring-2 focus:ring-blue-500">
+        <option value="COPS">COPS</option>
+        <option value="BOPS" selected>BOPS</option>
+        <option value="HOADMIN">HOADMIN</option>
+        <option value="UWR">UWR</option>
+        <option value="COQC">COQC</option>
+      </select>
+
+      <button onclick="logout()" class="bg-white text-blue-700 px-4 py-1 rounded-lg hover:bg-blue-100">Logout</button>
+    </div>
+  </nav>
+
+  <!-- Main Section -->
+  <main class="flex flex-row p-8 gap-10 justify-between">
+    <!-- Left Info Panel -->
+    <div class="flex-1 bg-white shadow-xl rounded-xl p-8 border border-blue-100">
+      <h2 class="text-2xl font-semibold text-blue-700 mb-4 text-center">Welcome to Health Insurance Web App</h2>
+      <p class="text-gray-600 text-center leading-relaxed">
+        Please select a module from the right panel to continue working in the 
+        <span class="text-blue-700 font-semibold" id="currentRole">BOPS</span> role.
+      </p>
+    </div>
+
+    <!-- Right Panel (Modules only, no heading or button) -->
+    <div class="w-96 bg-white shadow-xl rounded-xl p-8 border border-blue-100">
+      <div id="moduleList" class="flex flex-col gap-4">
+        <!-- Modules will be injected dynamically -->
+      </div>
+    </div>
+  </main>
+
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    // Auto-load BOPS modules on page load
+    document.addEventListener("DOMContentLoaded", () => {
+      displayModules();
+    });
+  </script>
+</body>
+</html>
