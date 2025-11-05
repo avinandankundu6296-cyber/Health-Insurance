@@ -1,34 +1,566 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Application Form | Health Insurance App</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-blue-50 min-h-screen flex">
-  <aside class="w-64 bg-blue-700 text-white p-6 space-y-4">
-    <h2 class="text-xl font-bold mb-4">Form Stages</h2>
-    <ul class="space-y-2">
-      <li class="hover:underline cursor-pointer">Personal Info</li>
-      <li class="hover:underline cursor-pointer">Nominee Details</li>
-      <li class="hover:underline cursor-pointer">Medical Info</li>
-      <li class="hover:underline cursor-pointer">Review & Submit</li>
-    </ul>
-  </aside>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Application Form | Health Insurance App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-  <main class="flex-1 p-8">
-    <nav class="bg-white shadow rounded-lg p-4 flex justify-between items-center mb-6">
-      <h3 class="text-blue-700 font-bold">Application Form</h3>
-      <span id="proposalRef" class="text-gray-600 text-sm">Proposal No: --</span>
+    <style>
+      select,
+      input {
+        transition: all 0.3s ease;
+        background: linear-gradient(to right, #ffffff, #eff6ff);
+      }
+      select:hover,
+      input:hover {
+        border-color: #2563eb;
+      }
+      select:focus,
+      input:focus {
+        outline: none;
+        transform: scale(1.02);
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+        border-color: #2563eb;
+      }
+
+      .form-label {
+        color: #1d4ed8;
+        font-weight: 600;
+        margin-bottom: 4px;
+        display: block;
+      }
+
+      .action-btn {
+        @apply bg-blue-700 text-white font-semibold px-6 py-2 rounded-lg shadow-md transition transform;
+      }
+      .action-btn:hover {
+        background-color: #2563eb;
+        transform: translateY(-2px) scale(1.03);
+      }
+
+      .info-box {
+        @apply bg-blue-100 text-blue-800 px-4 py-2 rounded-md font-medium;
+      }
+
+      .submenu-btn {
+        position: relative;
+        padding: 8px 18px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+      }
+      .submenu-btn:hover {
+        background-color: white;
+        color: #1d4ed8;
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 3px 10px rgba(255, 255, 255, 0.3);
+      }
+      .submenu-btn.active {
+        background-color: white;
+        color: #1d4ed8;
+        font-weight: 600;
+        box-shadow: 0 3px 10px rgba(255, 255, 255, 0.5);
+      }
+      .star {
+        color: #dbeafe;
+        font-size: 14px;
+        margin: 0 10px;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+
+  <body class="bg-blue-50 min-h-screen">
+    <!-- Top Navbar -->
+    <nav
+      class="bg-blue-700 text-white p-4 flex justify-between items-center sticky top-0 shadow-md z-30"
+    >
+      <div>
+        <h1 class="text-2xl font-bold">Application Form</h1>
+        <p id="systemDate" class="text-sm text-white/90 font-medium mt-1"></p>
+        <p class="text-xs text-blue-100 font-semibold mt-0.5">Version 1.0.0</p>
+      </div>
+
+      <div class="flex items-center space-x-5">
+        <p id="welcomeUser" class="text-sm font-semibold text-white/90">
+          Welcome, User
+        </p>
+
+        <button
+          onclick="goBack()"
+          class="flex items-center justify-center bg-white text-blue-700 p-2 rounded-full hover:bg-blue-100 transition"
+          title="Go Back"
+        >
+          <i data-lucide="arrow-left" class="w-5 h-5"></i>
+        </button>
+
+        <div class="flex items-center space-x-2 relative dropdown-wrapper">
+          <label for="roleSelect" class="font-semibold text-white text-sm"
+            >Role:</label
+          >
+          <div class="relative">
+            <select
+              id="roleSelect"
+              onchange="changeRole()"
+              class="appearance-none text-blue-700 bg-white font-semibold px-4 py-1.5 pr-8 rounded-lg shadow-md border border-blue-200 cursor-pointer hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition duration-200 text-sm"
+            >
+              <option value="COPS">COPS</option>
+              <option value="BOPS">BOPS</option>
+              <option value="HOADMIN">HOADMIN</option>
+              <option value="UWR">UWR</option>
+              <option value="COQC">COQC</option>
+            </select>
+            <i
+              data-lucide="chevron-down"
+              class="absolute right-2 top-1/2 -translate-y-1/2 text-blue-700 pointer-events-none w-4 h-4"
+            ></i>
+          </div>
+        </div>
+
+        <button
+          onclick="logout()"
+          class="flex items-center justify-center bg-white text-blue-700 p-2 rounded-full hover:bg-blue-100 transition"
+          title="Logout"
+        >
+          <i data-lucide="log-out" class="w-5 h-5"></i>
+        </button>
+      </div>
     </nav>
 
-    <section class="bg-white p-6 rounded-lg shadow">
-      <p class="text-gray-600">This section will hold the actual form fields (static placeholders for Sprint 1).</p>
-      <div class="mt-6 text-right">
-        <button class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700">Submit (Static)</button>
+    <!-- Submenu Navbar -->
+    <nav
+      class="bg-blue-600 text-white text-sm shadow-inner sticky top-[106px] z-20 overflow-x-auto"
+    >
+      <div
+        class="flex justify-center items-center px-4 py-2 flex-wrap text-center"
+      >
+        <button class="submenu-btn">Search Entity</button
+        ><span class="star">★</span> <button class="submenu-btn">Clone</button
+        ><span class="star">★</span>
+        <button class="submenu-btn">Quick Quote</button
+        ><span class="star">★</span>
+        <button class="submenu-btn">Archival Management</button
+        ><span class="star">★</span>
+        <button class="submenu-btn">Bulk Cancellation</button
+        ><span class="star">★</span>
+        <button
+          class="submenu-btn active"
+          onclick="window.location.href='application-data.html'"
+        >
+          Application Data Capture</button
+        ><span class="star">★</span>
+        <button class="submenu-btn">PPMC Dashboard</button
+        ><span class="star">★</span>
+        <button class="submenu-btn">File Upload</button
+        ><span class="star">★</span>
+        <button class="submenu-btn">Files View</button>
+      </div>
+    </nav>
+    <!-- Left Sidebar (Fixed after Top Navbar) -->
+    <!-- Left Sidebar (Fixed below Subnav, Icons Always Visible) -->
+    <aside
+      id="sidebar"
+      class="fixed top-[158px] left-0 h-[calc(100vh-148px)] w-20 bg-blue-700 text-white flex flex-col items-start py-4 px-3 space-y-4 transition-all duration-300 hover:w-56 shadow-lg z-30 overflow-y-auto"
+    >
+      <!-- Sidebar Item -->
+      <div
+        class="group flex items-center w-full px-4 py-3 hover:bg-blue-600 cursor-pointer transition"
+      >
+        <i data-lucide="file-text" class="w-6 h-6 flex-shrink-0"></i>
+        <span
+          class="ml-3 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-all duration-300 transform group-hover:translate-x-0 translate-x-[-10px]"
+          >Basic Details</span
+        >
+      </div>
+
+      <div
+        class="group flex items-center w-full px-4 py-3 hover:bg-blue-600 cursor-pointer transition"
+      >
+        <i data-lucide="upload-cloud" class="w-6 h-6 flex-shrink-0"></i>
+        <span
+          class="ml-3 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-all duration-300 transform group-hover:translate-x-0 translate-x-[-10px]"
+          >Submit Document</span
+        >
+      </div>
+
+      <div
+        class="group flex items-center w-full px-4 py-3 hover:bg-blue-600 cursor-pointer transition"
+      >
+        <i data-lucide="users" class="w-6 h-6 flex-shrink-0"></i>
+        <span
+          class="ml-3 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-all duration-300 transform group-hover:translate-x-0 translate-x-[-10px]"
+          >Member Details</span
+        >
+      </div>
+
+      <div
+        class="group flex items-center w-full px-4 py-3 hover:bg-blue-600 cursor-pointer transition"
+      >
+        <i data-lucide="list-checks" class="w-6 h-6 flex-shrink-0"></i>
+        <span
+          class="ml-3 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-all duration-300 transform group-hover:translate-x-0 translate-x-[-10px]"
+          >Policy Summary</span
+        >
+      </div>
+
+      <div
+        class="group flex items-center w-full px-4 py-3 hover:bg-blue-600 cursor-pointer transition"
+      >
+        <i data-lucide="credit-card" class="w-6 h-6 flex-shrink-0"></i>
+        <span
+          class="ml-3 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-all duration-300 transform group-hover:translate-x-0 translate-x-[-10px]"
+          >Payment Cycle</span
+        >
+      </div>
+
+      <div
+        class="group flex items-center w-full px-4 py-3 hover:bg-blue-600 cursor-pointer transition"
+      >
+        <i data-lucide="repeat" class="w-6 h-6 flex-shrink-0"></i>
+        <span
+          class="ml-3 opacity-0 group-hover:opacity-100 whitespace-nowrap transition-all duration-300 transform group-hover:translate-x-0 translate-x-[-10px]"
+          >Follow Up</span
+        >
+      </div>
+    </aside>
+
+    <!-- Policy Information Section -->
+    <section
+      class="bg-white shadow-md rounded-lg border border-blue-200 mx-10 mt-6 ml-24"
+    >
+      <!-- Blue Heading Bar -->
+      <div
+        class="bg-blue-700 text-white px-6 py-3 rounded-t-lg flex items-center justify-between"
+      >
+        <h2 class="text-lg font-semibold">Policy Information</h2>
+      </div>
+
+      <!-- Information Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm p-6">
+        <div>
+          <span class="text-blue-700 font-medium">Product:</span>
+          <p id="piProduct" class="font-semibold text-gray-700">-</p>
+        </div>
+        <div>
+          <span class="text-blue-700 font-medium">Policy Holder:</span>
+          <p id="piHolder" class="font-semibold text-gray-700">-</p>
+        </div>
+        <div>
+          <span class="text-blue-700 font-medium">Product Name:</span>
+          <p id="piProductName" class="font-semibold text-gray-700">-</p>
+        </div>
+        <div>
+          <span class="text-blue-700 font-medium">Quote/Policy Number:</span>
+          <p id="piQuoteNo" class="font-semibold text-gray-700">-</p>
+        </div>
+        <div>
+          <span class="text-blue-700 font-medium">Status:</span>
+          <p id="piStatus" class="font-semibold text-gray-700">Pending</p>
+        </div>
+        <div>
+          <span class="text-blue-700 font-medium">Sub-Status:</span>
+          <p id="piSubStatus" class="font-semibold text-gray-700">
+            Under Review
+          </p>
+        </div>
+        <div>
+          <span class="text-blue-700 font-medium">Medical Status:</span>
+          <p id="piMedical" class="font-semibold text-gray-700">
+            Not Initiated
+          </p>
+        </div>
+        <div>
+          <span class="text-blue-700 font-medium"
+            >Company Endorsement Number:</span
+          >
+          <p id="piEndorsement" class="font-semibold text-gray-700">-</p>
+        </div>
       </div>
     </section>
-  </main>
-  <script src="assets/js/main.js"></script>
-</body>
+    <!-- 🧾 Basic Details Section -->
+    <section
+      class="bg-white shadow-md rounded-lg border border-blue-200 mx-10 mt-6 ml-24"
+    >
+      <!-- Blue Heading -->
+      <div
+        class="bg-blue-700 text-white px-6 py-3 rounded-t-lg flex items-center justify-between"
+      >
+        <h2 class="text-lg font-semibold">Basic Details</h2>
+      </div>
+
+      <!-- Content Area -->
+      <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Row 1 -->
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Application Number Entry 1</label
+          >
+          <input
+            type="text"
+            id="appEntry1"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter Application Number Entry 1"
+          />
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Application Number Entry 2</label
+          >
+          <input
+            type="text"
+            id="appEntry2"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter Application Number Entry 2"
+          />
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Business Type</label
+          >
+          <select
+            id="businessType"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">-- Select Business Type --</option>
+            <option>New Business</option>
+            <option>Renewal</option>
+            <option>Portability</option>
+            <option>Endorsement</option>
+          </select>
+        </div>
+
+        <!-- Row 2 -->
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Quote Start Date</label
+          >
+          <input
+            type="date"
+            id="quoteStartDate"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Expected Policy Start Date</label
+          >
+          <input
+            type="date"
+            id="expectedPolicyStartDate"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Policy Effective Date</label
+          >
+          <input
+            type="date"
+            id="policyEffectiveDate"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- Row 3 -->
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Policy Start Time</label
+          >
+          <input
+            type="time"
+            id="policyStartTime"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Policy Expiry Date</label
+          >
+          <input
+            type="date"
+            id="policyExpiryDate"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Policy Expiry Time</label
+          >
+          <input
+            type="time"
+            id="policyExpiryTime"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <!-- Row 4 -->
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Policy Tenure</label
+          >
+          <select
+            id="policyTenure"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">-- Select Tenure --</option>
+            <option>1 Year</option>
+            <option>2 Years</option>
+            <option>3 Years</option>
+            <option>5 Years</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1">Duration</label>
+          <input
+            type="text"
+            id="duration"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+            placeholder="Calculated automatically"
+            readonly
+          />
+        </div>
+
+        <div>
+          <label class="block text-blue-700 font-medium mb-1"
+            >Proposal Number</label
+          >
+          <input
+            type="text"
+            id="proposalNo"
+            class="w-full p-2 border border-blue-200 rounded-md focus:ring-2 focus:ring-blue-500"
+            readonly
+          />
+        </div>
+      </div>
+    </section>
+    <!-- 🌐 Overall Save Button -->
+    <div class="flex justify-center py-10">
+      <button
+        onclick="saveAllData()"
+        class="bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg shadow-md transition transform hover:bg-blue-800 hover:-translate-y-1 flex items-center justify-center"
+      >
+        Save All
+        <i data-lucide="save" class="ml-2 w-5 h-5"></i>
+      </button>
+    </div>
+
+    <script>
+      // --- Populate Policy Information ---
+      document.addEventListener("DOMContentLoaded", () => {
+        // existing lucide icons + other info
+        lucide.createIcons();
+
+        // Populate Policy Info
+        document.getElementById("piProduct").textContent =
+          localStorage.getItem("productCode") || "-";
+        document.getElementById("piProductName").textContent =
+          localStorage.getItem("product") || "-";
+        document.getElementById("piQuoteNo").textContent =
+          localStorage.getItem("proposalNo") || "Not Generated";
+        document.getElementById("piHolder").textContent =
+          localStorage.getItem("loggedInUser") || "User";
+        document.getElementById("piEndorsement").textContent = "—";
+      });
+      // --- Date ---
+      function setSystemDate() {
+        const now = new Date();
+        const dd = String(now.getDate()).padStart(2, "0");
+        const mm = String(now.getMonth() + 1).padStart(2, "0");
+        const yyyy = now.getFullYear();
+        document.getElementById(
+          "systemDate"
+        ).textContent = `System Date: ${dd}/${mm}/${yyyy}`;
+      }
+      setSystemDate();
+
+      // --- Load stored data ---
+
+      function goBack() {
+        window.history.back();
+      }
+      function changeRole() {
+        const role = document.getElementById("roleSelect").value;
+        localStorage.setItem("selectedRole", role);
+        window.location.href = "home.html";
+      }
+      function logout() {
+        localStorage.clear();
+        window.location.href = "index.html";
+      }
+
+      function generateProposal() {
+        const productCode = localStorage.getItem("product") || "PRD";
+        const today = new Date();
+        const dateStr = today.toISOString().slice(0, 10).replace(/-/g, "");
+        const proposalNo = `${productCode}/00/${dateStr}/001`;
+        document.getElementById(
+          "proposalDisplay"
+        ).textContent = `Proposal No: ${proposalNo}`;
+        localStorage.setItem("proposalNo", proposalNo);
+      }
+
+      function saveAllData() {
+        const allData = {};
+
+        // --- Policy Information (from localStorage)
+        allData.policyInfo = {
+          productCode: localStorage.getItem("productCode") || "",
+          productName: localStorage.getItem("product") || "",
+          quoteNo: localStorage.getItem("proposalNo") || "",
+          holder: localStorage.getItem("loggedInUser") || "",
+        };
+
+        // --- Basic Details
+        allData.basicDetails = {
+          appEntry1: document.getElementById("appEntry1")?.value || "",
+          appEntry2: document.getElementById("appEntry2")?.value || "",
+          businessType: document.getElementById("businessType")?.value || "",
+          quoteStartDate:
+            document.getElementById("quoteStartDate")?.value || "",
+          expectedPolicyStartDate:
+            document.getElementById("expectedPolicyStartDate")?.value || "",
+          policyEffectiveDate:
+            document.getElementById("policyEffectiveDate")?.value || "",
+          policyStartTime:
+            document.getElementById("policyStartTime")?.value || "",
+          policyExpiryDate:
+            document.getElementById("policyExpiryDate")?.value || "",
+          policyExpiryTime:
+            document.getElementById("policyExpiryTime")?.value || "",
+          policyTenure: document.getElementById("policyTenure")?.value || "",
+          duration: document.getElementById("duration")?.value || "",
+        };
+
+        // --- Application Form / Applicant Details
+        allData.applicationForm = {
+          appName: document.getElementById("appName")?.value || "",
+          dob: document.getElementById("dob")?.value || "",
+          gender: document.getElementById("gender")?.value || "",
+          marital: document.getElementById("marital")?.value || "",
+          mobile: document.getElementById("mobile")?.value || "",
+          email: document.getElementById("email")?.value || "",
+          address: document.getElementById("address")?.value || "",
+          city: document.getElementById("city")?.value || "",
+          pincode: document.getElementById("pincode")?.value || "",
+          term: document.getElementById("term")?.value || "",
+          sumInsured: document.getElementById("sumInsured")?.value || "",
+          premium: document.getElementById("premium")?.value || "",
+        };
+
+        // Save to localStorage
+        localStorage.setItem("fullApplicationData", JSON.stringify(allData));
+
+        alert("✅ All form data saved successfully!");
+        console.log("Saved Data:", allData);
+      }
+    </script>
+  </body>
 </html>
