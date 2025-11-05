@@ -4,34 +4,184 @@
   <meta charset="UTF-8">
   <title>Policy Management | Health Insurance App</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    /* Dropdown styling */
+    select {
+      transition: all 0.3s ease;
+      background: linear-gradient(to right, #ffffff, #ebf4ff);
+    }
+    select:hover {
+      border-color: #2563eb;
+    }
+    select:focus {
+      outline: none;
+      transform: scale(1.03);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+      border-color: #2563eb;
+    }
+    option {
+      background-color: #fff;
+      color: #1d4ed8;
+      font-weight: 500;
+    }
+    .dropdown-wrapper:focus-within .dropdown-arrow {
+      transform: rotate(180deg);
+      transition: transform 0.3s ease;
+    }
+
+    /* --- Submenu Buttons --- */
+    .submenu-btn {
+      position: relative;
+      padding: 8px 18px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+    }
+    .submenu-btn::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 0%;
+      height: 2px;
+      background: white;
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+    .submenu-btn:hover::after {
+      width: 100%;
+    }
+    .submenu-btn:hover {
+      background-color: #ffffff;
+      color: #1d4ed8;
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 3px 10px rgba(255, 255, 255, 0.3);
+    }
+
+    /* Star Separator */
+    .star {
+      color: #dbeafe; /* light pastel blue */
+      font-size: 14px;
+      margin: 0 10px;
+      opacity: 0.7;
+      transition: opacity 0.3s ease;
+    }
+    .star:hover {
+      opacity: 1;
+    }
+
+    /* Submenu container styling */
+    .submenu-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 10px 20px;
+      gap: 4px;
+    }
+  </style>
 </head>
+
 <body class="bg-blue-50 min-h-screen">
-  <!-- Navbar -->
-  <nav class="bg-blue-700 text-white p-4 sticky top-0 z-10 shadow-md flex justify-between items-center">
-    <h1 class="font-bold text-xl">Policy Management</h1>
-    <div class="space-x-4">
-      <a href="home.html" class="hover:underline">Home</a>
-      <a href="#" onclick="logout()" class="hover:underline">Logout</a>
+  <!-- Top Navbar -->
+  <nav class="bg-blue-700 text-white p-4 flex justify-between items-center sticky top-0 shadow-md z-30">
+    <!-- Left Section -->
+    <div>
+      <h1 class="text-2xl font-bold leading-tight">Policy Management</h1>
+      <p id="systemDate" class="text-sm text-white/90 font-medium mt-1"></p>
+      <p class="text-xs text-blue-100 font-semibold mt-0.5">Version 1.0.0</p>
+    </div>
+
+    <!-- Right Section -->
+    <div class="flex items-center space-x-5">
+      <!-- Welcome User -->
+      <p id="welcomeUser" class="text-sm font-semibold text-white/90">Welcome, User</p>
+
+      <!-- Back Button -->
+      <button onclick="goBack()" 
+              class="flex items-center justify-center bg-white text-blue-700 p-2 rounded-full hover:bg-blue-100 transition"
+              title="Go Back">
+        <i data-lucide="arrow-left" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Role Dropdown -->
+      <div class="flex items-center space-x-2 relative dropdown-wrapper">
+        <label for="roleSelect" class="font-semibold text-white text-sm">Role:</label>
+        <div class="relative">
+          <select id="roleSelect" onchange="changeRole()"
+                  class="appearance-none text-blue-700 bg-white font-semibold px-4 py-1.5 pr-8 rounded-lg shadow-md border border-blue-200 cursor-pointer hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-400 transition duration-200 text-sm">
+            <option value="COPS">COPS</option>
+            <option value="BOPS">BOPS</option>
+            <option value="HOADMIN">HOADMIN</option>
+            <option value="UWR">UWR</option>
+            <option value="COQC">COQC</option>
+          </select>
+          <i data-lucide="chevron-down" class="dropdown-arrow absolute right-2 top-1/2 -translate-y-1/2 text-blue-700 pointer-events-none w-4 h-4 transition-transform duration-300"></i>
+        </div>
+      </div>
+
+      <!-- Logout Icon -->
+      <button onclick="logout()" 
+              class="flex items-center justify-center bg-white text-blue-700 p-2 rounded-full hover:bg-blue-100 transition"
+              title="Logout">
+        <i data-lucide="log-out" class="w-5 h-5"></i>
+      </button>
     </div>
   </nav>
 
-  <!-- Buttons -->
-  <div class="flex justify-center space-x-4 mt-6">
-    <button onclick="goTo('application-data.html')" 
-            class="px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-      Application Data Capture
-    </button>
+  <!-- Second Navbar (Animated Submenu) -->
+  <nav class="bg-blue-600 text-white text-sm shadow-inner sticky top-[68px] z-20 overflow-x-auto">
+    <div class="flex justify-center items-center px-4 py-2 flex-wrap text-center">
+      <button class="submenu-btn">Search Entity</button><span class="star">★</span>
+      <button class="submenu-btn">Clone</button><span class="star">★</span>
+      <button class="submenu-btn">Quick Quote</button><span class="star">★</span>
+      <button class="submenu-btn">Archival Management</button><span class="star">★</span>
+      <button class="submenu-btn">Bulk Cancellation</button><span class="star">★</span>
+      <button class="submenu-btn" onclick="window.location.href='application-data.html'">Application Data Capture</button><span class="star">★</span>
+      <button class="submenu-btn">PPMC Dashboard</button><span class="star">★</span>
+      <button class="submenu-btn">File Upload</button><span class="star">★</span>
+      <button class="submenu-btn">Files View</button>
+    </div>
+  </nav>
 
-    <button class="px-5 py-2 bg-white text-blue-700 border border-blue-600 rounded-lg">
-      Search Entity
-    </button>
-
-    <button class="px-5 py-2 bg-white text-blue-700 border border-blue-600 rounded-lg">
-      Quick Quote
-    </button>
+  <!-- Main Content -->
+  <div class="p-8 text-center text-blue-700 font-semibold">
+    <p class="mt-4">Policy Management main content will appear here...</p>
   </div>
 
-  <!-- Link to your JS -->
-  <script src="assets/js/main.js"></script>
+  <script>
+    // 🗓️ System Date
+    function setSystemDate() {
+      const now = new Date();
+      const dd = String(now.getDate()).padStart(2, '0');
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const yyyy = now.getFullYear();
+      document.getElementById('systemDate').textContent = `System Date: ${dd}/${mm}/${yyyy}`;
+    }
+    setSystemDate();
+
+    // 👋 Welcome
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = localStorage.getItem("loggedInUser") || "User";
+      document.getElementById("welcomeUser").textContent = `Welcome, ${user}`;
+      const savedRole = localStorage.getItem("selectedRole") || "HOADMIN";
+      document.getElementById("roleSelect").value = savedRole;
+      lucide.createIcons();
+    });
+
+    // 🔙 Navigation
+    function goBack() { window.history.back(); }
+    function changeRole() {
+      const role = document.getElementById("roleSelect").value;
+      localStorage.setItem("selectedRole", role);
+      window.location.href = "home.html";
+    }
+    function logout() {
+      localStorage.clear();
+      window.location.href = "index.html";
+    }
+  </script>
 </body>
 </html>
